@@ -68,6 +68,7 @@ function Signup() {
             <div>
               <p className="mb-2 font-semibold">Senha</p>
               <Input
+                validationType="password"
                 icon="password"
                 placeholder="***********"
                 inputValue={getPassword}
