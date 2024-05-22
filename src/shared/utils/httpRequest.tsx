@@ -1,6 +1,5 @@
 import axios from "axios";
 import HttpMethodType from "../enums/httpMethod";
-import { IRequestSignup, IResponseSignup } from "../interfaces/ISignup";
 
 export async function httpRequest(
   url: string,
@@ -19,10 +18,4 @@ export async function httpRequest(
     .catch((error) => {
       console.log(error);
     });
-}
-
-export async function createUser(
-  signupData: IRequestSignup
-): Promise<IResponseSignup> {
-  return await httpRequest("v1/user/signup", HttpMethodType.POST, signupData);
 }
