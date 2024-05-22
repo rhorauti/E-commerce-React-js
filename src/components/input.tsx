@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
 import {
   mdiEmailOutline,
@@ -15,17 +15,85 @@ function Input(props: {
   showIcon?: boolean;
   validationType?: string;
   inputValue?: (value: string) => void;
+  passwordOk?: (isOk: boolean) => void;
+  nameOk?: (isOk: boolean) => void;
+  emailOk?: (isOk: boolean) => void;
 }) {
   const { icon = "email", placeholder = "", showIcon = true } = props;
   const [showPassword, setShowPassword] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isBorderRed, setIsBorderRed] = useState(false);
-  const [isLettersQtyPasswordOk, setIsLetterQtyOk] = useState(true);
+  const [isBorderGreen, setIsBorderGreen] = useState(false);
+  const [isLettersQtyPasswordOk, setIsLetterQtyPasswordOk] = useState(false);
   const [isOneLetterNumberOk, setIsOneLetterNumberOk] = useState(false);
   const [isOneLetterSymbolOk, setIsOneLetterSymbolOk] = useState(false);
   const [isOneLetterUppercaseOk, setIsOneLetterUppercaseOk] = useState(false);
   const [isLettersQtyNameOk, setIsLettersQtyNameOk] = useState(false);
   const [isEmailOk, setIsEmailOk] = useState(false);
+
+  useEffect(() => {
+    if (inputValue.length > 0) {
+      switch (props.validationType) {
+        case "name": {
+          if (inputValue.length > 1) {
+            setIsLettersQtyNameOk(true);
+            setIsBorderRed(false);
+            setIsBorderGreen(true);
+            props.nameOk && props.nameOk(true);
+          } else {
+            props.nameOk && props.nameOk(false);
+            setIsLettersQtyNameOk(false);
+            setIsBorderRed(true);
+            setIsBorderGreen(false);
+          }
+          break;
+        }
+        case "email": {
+          if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputValue)) {
+            setIsEmailOk(true);
+            setIsBorderRed(false);
+            setIsBorderGreen(true);
+            props.emailOk && props.emailOk(true);
+          } else {
+            props.emailOk && props.emailOk(false);
+            setIsBorderRed(true);
+            setIsBorderGreen(false);
+            setIsEmailOk(false);
+          }
+          break;
+        }
+        case "password": {
+          const isLengthOk = inputValue.length > 5;
+          const hasNumber = /[0-9]/g.test(inputValue);
+          const hasUppercase = /[A-Z]/g.test(inputValue);
+          const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/g.test(
+            inputValue
+          );
+          setIsLetterQtyPasswordOk(isLengthOk);
+          setIsOneLetterNumberOk(hasNumber);
+          setIsOneLetterUppercaseOk(hasUppercase);
+          setIsOneLetterSymbolOk(hasSymbol);
+
+          const isPasswordValid =
+            isLengthOk && hasNumber && hasUppercase && hasSymbol;
+          if (isPasswordValid) {
+            setIsBorderRed(false);
+            setIsBorderGreen(true);
+          } else {
+            setIsBorderRed(true);
+            setIsBorderGreen(false);
+          }
+          props.passwordOk && props.passwordOk(isPasswordValid);
+          break;
+        }
+        default:
+          "password";
+          break;
+      }
+    } else {
+      setIsBorderRed(false);
+    }
+  }, [inputValue]);
 
   function handleInputValue(e: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(e.target.value);
@@ -38,7 +106,11 @@ function Input(props: {
         <input
           type={icon == "password" && !showPassword ? "password" : "text"}
           className={`w-full rounded-md border-2 ${
-            isBorderRed ? "border-red" : "border-gray-300"
+            isBorderRed
+              ? "border-red-500"
+              : isBorderGreen
+              ? "border-green-600"
+              : "border-gray-300"
           } bg-transparent py-2 pl-3 pr-11`}
           placeholder={placeholder}
           onInput={handleInputValue}
@@ -105,20 +177,6 @@ function Input(props: {
               <p
                 className={`flex items-center
                   ${
-                    isLettersQtyPasswordOk ? "text-green-600" : "text-red-500"
-                  }`}
-              >
-                <Icon
-                  path={
-                    isLettersQtyPasswordOk ? mdiCheckCircle : mdiCloseCircle
-                  }
-                  size={1}
-                ></Icon>
-                <span className="ml-1">Mímino de 6 caracteres</span>
-              </p>
-              <p
-                className={`flex items-center
-                  ${
                     isOneLetterUppercaseOk ? "text-green-600" : "text-red-500"
                   }`}
               >
@@ -132,6 +190,16 @@ function Input(props: {
               </p>
               <p
                 className={`flex items-center
+                  ${isOneLetterNumberOk ? "text-green-600" : "text-red-500"}`}
+              >
+                <Icon
+                  path={isOneLetterNumberOk ? mdiCheckCircle : mdiCloseCircle}
+                  size={1}
+                ></Icon>
+                <span className="ml-1">Mínimo de 1 número</span>
+              </p>
+              <p
+                className={`flex items-center
                   ${isOneLetterSymbolOk ? "text-green-600" : "text-red-500"}`}
               >
                 <Icon
@@ -142,13 +210,17 @@ function Input(props: {
               </p>
               <p
                 className={`flex items-center
-                  ${isOneLetterNumberOk ? "text-green-600" : "text-red-500"}`}
+                  ${
+                    isLettersQtyPasswordOk ? "text-green-600" : "text-red-500"
+                  }`}
               >
                 <Icon
-                  path={isOneLetterNumberOk ? mdiCheckCircle : mdiCloseCircle}
+                  path={
+                    isLettersQtyPasswordOk ? mdiCheckCircle : mdiCloseCircle
+                  }
                   size={1}
                 ></Icon>
-                <span className="ml-1">Mínimo de 1 número</span>
+                <span className="ml-1">Mímino de 6 caracteres</span>
               </p>
             </div>
           ))}

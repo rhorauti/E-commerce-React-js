@@ -2,40 +2,82 @@ import Button from "../components/button";
 import Input from "../components/input";
 import Loading from "../components/loading";
 import ModalInfo from "../components/modal-info";
-// import { httpRequest } from "../shared/utils/httpRequest";
-// import HttpMethodType from "../shared/enums/httpMethod";
 import { IRequestSignup } from "../shared/interfaces/ISignup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createUser } from "../shared/utils/userAuth/userAuth";
 
 function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalInfoActive, setIsModaInfoActive] = useState(false);
   const [signupData, setSignupData] = useState<IRequestSignup>({
-    name: "",
+    userName: "",
     email: "",
     password: "",
   });
+  const [isNameOk, setIsNameOk] = useState(false);
+  const [isEmailOk, setIsEmailOk] = useState(false);
+  const [isPasswordOk, setIsPasswordOk] = useState(false);
+  const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+  const [iconType, setIconType] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
 
   function closeModalInfo(): void {
     setIsModaInfoActive(false);
   }
 
-  function registerNewUser(): void {
-    // httpRequest('/user/signup', HttpMethodType.POST, setSignupData);
-    setIsModaInfoActive(true);
+  async function registerNewUser(): Promise<void> {
+    setIsLoading(true);
+    try {
+      const response = await createUser(signupData);
+      if (response.status) {
+        console.log(response);
+        setModalMessage("Usuário criado com sucesso!");
+        setIconType("success");
+        setIsModaInfoActive(true);
+      } else {
+        setModalMessage("Erro ao criar o usuário!");
+        setIconType("fail");
+        setIsModaInfoActive(true);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  function getName(inputValue: string) {
+  function getName(inputValue: string): void {
     setSignupData((prevState) => ({ ...prevState, name: inputValue }));
   }
 
-  function getEmail(inputValue: string) {
+  function getEmail(inputValue: string): void {
     setSignupData((prevState) => ({ ...prevState, email: inputValue }));
   }
 
-  function getPassword(inputValue: string) {
+  function getPassword(inputValue: string): void {
     setSignupData((prevState) => ({ ...prevState, password: inputValue }));
   }
+
+  function getNameOk(isNameOk: boolean): void {
+    setIsNameOk(isNameOk);
+  }
+
+  function getEmailOk(isEmailOk: boolean): void {
+    setIsEmailOk(isEmailOk);
+  }
+
+  function getPasswordOk(isPasswordOk: boolean): void {
+    setIsPasswordOk(isPasswordOk);
+  }
+
+  useEffect(() => {
+    if (isNameOk && isEmailOk && isPasswordOk) {
+      console.log(isNameOk, isEmailOk, isPasswordOk);
+      setIsBtnDisabled(false);
+    } else {
+      setIsBtnDisabled(true);
+    }
+  }, [isNameOk, isEmailOk, isPasswordOk]);
 
   return (
     <div>
@@ -55,14 +97,21 @@ function Signup() {
           <div className="my-5 space-y-4">
             <div>
               <p className="mb-2 font-semibold">Nome</p>
-              <Input icon="name" inputValue={getName} />
+              <Input
+                validationType="name"
+                icon="name"
+                inputValue={getName}
+                nameOk={getNameOk}
+              />
             </div>
             <div>
               <p className="mb-2 font-semibold">E-mail</p>
               <Input
+                validationType="email"
                 icon="email"
                 placeholder="exemplo@provedor.com"
                 inputValue={getEmail}
+                emailOk={getEmailOk}
               />
             </div>
             <div>
@@ -72,6 +121,7 @@ function Signup() {
                 icon="password"
                 placeholder="***********"
                 inputValue={getPassword}
+                passwordOk={getPasswordOk}
               />
             </div>
           </div>
@@ -79,6 +129,7 @@ function Signup() {
             <Button
               emitClickEvent={registerNewUser}
               btnColor="blue"
+              btnIsDisabled={isBtnDisabled}
               label="Cadastrar com o e-mail"
             />
             <p className="my-3 text-center">OU</p>
@@ -102,8 +153,8 @@ function Signup() {
       <ModalInfo
         isModalInfoActive={isModalInfoActive}
         closeModalInfoEvent={closeModalInfo}
-        iconType="success"
-        description="Usuário cadastrado com sucesso!"
+        iconType={iconType}
+        description={modalMessage}
       />
       <Loading isLoading={isLoading} />
     </div>

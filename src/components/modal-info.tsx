@@ -45,6 +45,7 @@ function ModalInfo(props: {
           <Button
             btnColor="black"
             label="Fechar"
+            btnIsDisabled={false}
             emitClickEvent={props.closeModalInfoEvent}
           />
         </div>
