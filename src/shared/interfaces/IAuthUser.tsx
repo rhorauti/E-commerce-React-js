@@ -13,3 +13,18 @@ export interface IResponseSignup {
     email: string;
   };
 }
+
+export interface IRequestLogin {
+  email: string;
+  password: string;
+}
+
+export interface IResponseLogin {
+  date: string;
+  status: boolean;
+  message: string;
+  data: {
+    id: number;
+    email: string;
+  };
+}

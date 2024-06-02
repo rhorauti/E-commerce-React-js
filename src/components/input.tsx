@@ -32,7 +32,7 @@ function Input(props: {
   const [isEmailOk, setIsEmailOk] = useState(false);
 
   useEffect(() => {
-    if (inputValue.length > 0) {
+    if (inputValue.length > 0 && props.validationType) {
       switch (props.validationType) {
         case "name": {
           if (inputValue.length > 1) {
