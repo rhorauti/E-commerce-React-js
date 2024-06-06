@@ -17,9 +17,16 @@ body {
   background-color: #ffffff;
 }
 
+.grow-2 {
+  flex-grow: 2;
+}
+
 @media screen and (max-width: 768px) {
   body {
     font-size: 12px;
+  }
+  .hidden-mobile {
+    display: hidden;
   }
 }
 
