@@ -38,7 +38,7 @@ function Button(props: ButtonProps) {
         break;
       }
       default:
-        setColor("");
+        "black";
     }
   }, [btnColor]);
 
