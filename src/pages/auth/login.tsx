@@ -3,7 +3,7 @@ import Input from "../../components/input";
 import Loading from "../../components/loading";
 import ModalInfo from "../../components/modal-info";
 import { IRequestLogin } from "../../core/interfaces/IAuthUser";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { authenticateUser } from "../../core/http/auth/userAuth";
 
@@ -43,11 +43,7 @@ function Login() {
             <p className="text-2xl font-bold">Bem-vindo!</p>
             <p className="mt-4">
               Logando ou criando uma conta, você concorda com os
-              <span className="cursor-pointer font-bold">
-                {" "}
-                Termos de Serviço
-              </span>{" "}
-              da aplicação
+              <span className="cursor-pointer font-bold"> Termos de Serviço</span> da aplicação
             </p>
           </div>
           <div className="mt-5 mb-4 space-y-4">
@@ -82,19 +78,11 @@ function Login() {
             </p>
           </div>
           <div>
-            <Button
-              emitClickEvent={loginUser}
-              btnColor="blue"
-              label="Login com o e-mail"
-            />
+            <Button emitClickEvent={loginUser} btnColor="blue" label="Login com o e-mail" />
             <p className="my-3 text-center">OU</p>
             <div className="mt-3">
               <button className="flex w-full items-center justify-center rounded-lg border-2 border-gray-400 p-1 font-semibold hover:bg-gray-100">
-                <img
-                  src={"/img/logo-google.webp"}
-                  width="25"
-                  alt="Logo do Google"
-                />
+                <img src={"/img/logo-google.webp"} width="25" alt="Logo do Google" />
                 <span className="ml-3">Acessar com o Google</span>
               </button>
             </div>

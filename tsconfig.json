@@ -20,7 +20,17 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "baseUrl": "./",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@src/assets/*": ["src/assets/*"],
+      "@src/components/*": ["src/components/*"],
+      "@src/core/*": ["src/core/*"],
+      "@src/pages/*": ["src/pages/*"],
+      "@src/router/*": ["src/router/*"],
+      "@src/store/*": ["src/store/*"]
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

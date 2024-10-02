@@ -54,10 +54,7 @@ export function PasswordRecover() {
               />
             </div>
           </div>
-          <p>
-            O sistema irá enviar um link para o e-mail acima caso o mesmo esteja
-            cadastrado.
-          </p>
+          <p>O sistema irá enviar um link para o e-mail acima caso o mesmo esteja cadastrado.</p>
           <div className="mt-3">
             <Button
               emitClickEvent={loginUser}

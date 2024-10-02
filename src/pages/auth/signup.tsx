@@ -1,52 +1,71 @@
-import Button from "../../components/button";
-import Input from "../../components/input";
-import Loading from "../../components/loading";
-import ModalInfo from "../../components/modal-info";
-import { IRequestSignup } from "../../core/interfaces/IAuthUser";
 import { useEffect, useState } from "react";
-import { createUser } from "../../core/http/auth/userAuth";
 import { Link } from "react-router-dom";
+import Button from "@src/components/button";
+import { IRequestSignup } from "@src/core/interfaces/IAuthUser";
+import { createUser } from "@src/core/http/auth/userAuth";
+import Input from "@src/components/input";
+import ModalInfo from "@src/components/modal-info";
+import Loading from "@src/components/loading";
 
 function Signup() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalInfoActive, setIsModaInfoActive] = useState(false);
   const [signupData, setSignupData] = useState<IRequestSignup>({
-    userName: "",
+    username: "",
     email: "",
     password: "",
+    avatar: "",
   });
-  const [isNameOk, setIsNameOk] = useState(false);
-  const [isEmailOk, setIsEmailOk] = useState(false);
-  const [isPasswordOk, setIsPasswordOk] = useState(false);
+  const [signupRequirementsOk, setSignupRequirementsOk] = useState({
+    isUsernameOk: false,
+    isEmailOk: false,
+    isPasswordOk: false,
+  });
+  const [modalConfig, setModalConfig] = useState({
+    isActive: false,
+    iconType: "",
+    message: "",
+  });
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
-  const [iconType, setIconType] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
 
   async function registerNewUser(): Promise<void> {
     setIsLoading(true);
     try {
       const response = await createUser(signupData);
       if (response.status) {
-        setIconType("success");
+        setModalConfig(() => ({
+          isActive: true,
+          iconType: "success",
+          message: response.message,
+        }));
       } else {
-        setIconType("fail");
+        throw new Error(response.message);
       }
-      setModalMessage(response.message);
-      setIsModaInfoActive(true);
     } catch (error) {
-      console.log(error);
+      setModalConfig(() => ({
+        isActive: true,
+        iconType: "fail",
+        message: (error as Error).message,
+      }));
     } finally {
       setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    if (isNameOk && isEmailOk && isPasswordOk) {
+    if (
+      signupRequirementsOk.isUsernameOk &&
+      signupRequirementsOk.isEmailOk &&
+      signupRequirementsOk.isPasswordOk
+    ) {
       setIsBtnDisabled(false);
     } else {
       setIsBtnDisabled(true);
     }
-  }, [isNameOk, isEmailOk, isPasswordOk]);
+  }, [
+    signupRequirementsOk.isUsernameOk,
+    signupRequirementsOk.isEmailOk,
+    signupRequirementsOk.isPasswordOk,
+  ]);
 
   return (
     <div>
@@ -62,9 +81,17 @@ function Signup() {
                 validationType="name"
                 icon="name"
                 inputValue={(value) =>
-                  setSignupData((prevState) => ({ ...prevState, name: value }))
+                  setSignupData((prevState) => ({
+                    ...prevState,
+                    username: value,
+                  }))
                 }
-                nameOk={(isNameOk) => setIsNameOk(isNameOk)}
+                nameOk={(isUsernameOk) =>
+                  setSignupRequirementsOk((prevState) => ({
+                    ...prevState,
+                    isUsernameOk: isUsernameOk,
+                  }))
+                }
               />
             </div>
             <div>
@@ -76,7 +103,9 @@ function Signup() {
                 inputValue={(value) =>
                   setSignupData((prevState) => ({ ...prevState, email: value }))
                 }
-                emailOk={(isEmailOk) => setIsEmailOk(isEmailOk)}
+                emailOk={(isEmailOk) =>
+                  setSignupRequirementsOk((prevState) => ({ ...prevState, isEmailOk: isEmailOk }))
+                }
               />
             </div>
             <div>
@@ -91,7 +120,12 @@ function Signup() {
                     password: value,
                   }))
                 }
-                passwordOk={(isPasswordOk) => setIsPasswordOk(isPasswordOk)}
+                passwordOk={(isPasswordOk) =>
+                  setSignupRequirementsOk((prevState) => ({
+                    ...prevState,
+                    isPasswordOk: isPasswordOk,
+                  }))
+                }
               />
             </div>
           </div>
@@ -105,11 +139,7 @@ function Signup() {
             <p className="my-3 text-center">OU</p>
             <div>
               <button className="flex w-full items-center justify-center rounded-lg border-2 border-gray-400 p-1 font-semibold hover:bg-gray-100">
-                <img
-                  src={"/img/logo-google.webp"}
-                  width="25"
-                  alt="Logo do Google"
-                />
+                <img src={"/img/logo-google.webp"} width="25" alt="Logo do Google" />
                 <span className="ml-3">Registre-se com o Google</span>
               </button>
             </div>
@@ -123,10 +153,12 @@ function Signup() {
         </div>
       </div>
       <ModalInfo
-        isModalInfoActive={isModalInfoActive}
-        closeModalInfoEvent={() => setIsModaInfoActive(false)}
-        iconType={iconType}
-        description={modalMessage}
+        isModalInfoActive={modalConfig.isActive}
+        closeModalInfoEvent={() =>
+          setModalConfig((prevState) => ({ ...prevState, isActive: false }))
+        }
+        iconType={modalConfig.iconType}
+        description={modalConfig.message}
       />
       <Loading isLoading={isLoading} />
     </div>
