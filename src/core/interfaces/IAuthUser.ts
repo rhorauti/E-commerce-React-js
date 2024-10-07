@@ -30,3 +30,13 @@ export interface IResponseLogin {
     email: string;
   };
 }
+
+export interface IResponseEmailRecover {
+  date: string;
+  status: boolean;
+  token: string;
+  message: string;
+  data: {
+    email: boolean;
+  }
+}

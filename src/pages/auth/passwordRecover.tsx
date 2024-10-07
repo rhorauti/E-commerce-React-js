@@ -1,38 +1,52 @@
+import Button from "@src/components/button";
+import Input from "@src/components/input";
+import Loading from "@src/components/loading";
+import ModalInfo from "@src/components/modal-info";
+import { sendEmailRecover } from "@src/core/http/auth/userAuth";
+import { IAxiosResponseError } from "@src/core/interfaces/IAxiosResponseError";
 import { useState } from "react";
-import { IRequestLogin } from "../../core/interfaces/IAuthUser";
-import Input from "../../components/input";
-import Button from "../../components/button";
-import { Link } from "react-router-dom";
-import ModalInfo from "../../components/modal-info";
-import Loading from "../../components/loading";
-import { authenticateUser } from "../../core/http/auth/userAuth";
+import { Link, useNavigate } from "react-router-dom";
 
 export function PasswordRecover() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalInfoActive, setIsModaInfoActive] = useState(false);
-  const [loginData, setloginData] = useState<IRequestLogin>({
-    email: "",
-    password: "",
+  const [email, setEmail] = useState<string>("");
+  const [modalConfig, setModalConfig] = useState({
+    isActive: false,
+    iconType: "",
+    message: "",
   });
-  const [iconType, setIconType] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
 
-  async function loginUser() {
+  const navigate = useNavigate();
+  let isPasswordRecoverOk = false;
+
+  async function sendRecoverEmail() {
     setIsLoading(true);
     try {
-      const response = await authenticateUser(loginData);
+      const response = await sendEmailRecover(email);
       if (response.status) {
-        setIconType("success");
+        isPasswordRecoverOk = true;
+        setModalConfig(() => ({ isActive: true, iconType: "success", message: response.message }));
       } else {
-        setIconType("fail");
+        throw new Error("Falha ao tentar recuperar a senha!");
       }
-      setModalMessage(response.message);
-      setIsModaInfoActive(true);
     } catch (error) {
-      console.log(error);
+      const axiosError = error as IAxiosResponseError;
+      setModalConfig(() => ({
+        isActive: true,
+        iconType: "fail",
+        message: axiosError.response.data.message,
+      }));
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function onModalInfoCloseEvent(): void {
+    if (isPasswordRecoverOk) {
+      navigate("/login");
+      isPasswordRecoverOk = false;
+    }
+    setModalConfig((prevState) => ({ ...prevState, isActive: false }));
   }
 
   return (
@@ -48,19 +62,13 @@ export function PasswordRecover() {
               <Input
                 icon="email"
                 placeholder="exemplo@provedor.com"
-                inputValue={(value) =>
-                  setloginData((prevState) => ({ ...prevState, email: value }))
-                }
+                inputValue={(value) => setEmail(value)}
               />
             </div>
           </div>
           <p>O sistema irá enviar um link para o e-mail acima caso o mesmo esteja cadastrado.</p>
           <div className="mt-3">
-            <Button
-              emitClickEvent={loginUser}
-              btnColor="blue"
-              label="Enviar email de recuperação"
-            />
+            <Button emitClickEvent={sendRecoverEmail} btnColor="blue" label="Enviar email" />
             <p className="mt-4 text-center">
               Já tem conta?{" "}
               <Link to="/login" className="cursor-pointer font-bold">
@@ -71,10 +79,10 @@ export function PasswordRecover() {
         </div>
       </div>
       <ModalInfo
-        isModalInfoActive={isModalInfoActive}
-        closeModalInfoEvent={() => setIsModaInfoActive(false)}
-        iconType={iconType}
-        description={modalMessage}
+        isModalInfoActive={modalConfig.isActive}
+        closeModalInfoEvent={onModalInfoCloseEvent}
+        iconType={modalConfig.iconType}
+        description={modalConfig.message}
       />
       <Loading isLoading={isLoading} />
     </div>

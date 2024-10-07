@@ -1,9 +1,9 @@
-import Button from "../../components/button";
-import Input from "../../components/input";
-import Loading from "../../components/loading";
-import ModalInfo from "../../components/modal-info";
+import Button from "@src/components/button";
+import Input from "@src/components/input";
+import Loading from "@src/components/loading";
+import ModalInfo from "@src/components/modal-info";
+import { updateUserPassword } from "@src/core/http/auth/userAuth";
 import { useEffect, useState } from "react";
-import { updateUserPassword } from "../../core/http/auth/userAuth";
 import { Link } from "react-router-dom";
 
 function NewPassword() {

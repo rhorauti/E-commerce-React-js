@@ -1,38 +1,56 @@
-import Button from "../../components/button";
-import Input from "../../components/input";
-import Loading from "../../components/loading";
-import ModalInfo from "../../components/modal-info";
-import { IRequestLogin } from "../../core/interfaces/IAuthUser";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { authenticateUser } from "../../core/http/auth/userAuth";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Button from "@src/components/button";
+import { IRequestLogin } from "@src/core/interfaces/IAuthUser";
+import { authenticateUser } from "@src/core/http/auth/userAuth";
+import Input from "@src/components/input";
+import ModalInfo from "@src/components/modal-info";
+import Loading from "@src/components/loading";
+import { IAxiosResponseError } from "@src/core/interfaces/IAxiosResponseError";
 
 function Login() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalInfoActive, setIsModaInfoActive] = useState(false);
   const [loginData, setloginData] = useState<IRequestLogin>({
     email: "",
     password: "",
   });
-  const [iconType, setIconType] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
+  const [modalConfig, setModalConfig] = useState({
+    isActive: false,
+    iconType: "",
+    message: "",
+  });
 
-  async function loginUser() {
+  const navigate = useNavigate();
+  let isLoginOk = false;
+
+  async function loginUser(): Promise<void> {
     setIsLoading(true);
     try {
       const response = await authenticateUser(loginData);
       if (response.status) {
-        setIconType("success");
+        setModalConfig(() => ({ isActive: true, iconType: "success", message: response.message }));
+        isLoginOk = true;
       } else {
-        setIconType("fail");
+        throw new Error(response.message);
       }
-      setModalMessage(response.message);
-      setIsModaInfoActive(true);
     } catch (error) {
-      console.log(error);
+      const axiosError = error as IAxiosResponseError;
+      setModalConfig(() => ({
+        isActive: true,
+        iconType: "fail",
+        message: axiosError.response.data.message,
+      }));
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function onModalInfoCloseEvent(): void {
+    if (isLoginOk) {
+      navigate("/home");
+      isLoginOk = false;
+    }
+    setModalConfig((prevState) => ({ ...prevState, isActive: false }));
   }
 
   return (
@@ -96,10 +114,10 @@ function Login() {
         </div>
       </div>
       <ModalInfo
-        isModalInfoActive={isModalInfoActive}
-        closeModalInfoEvent={() => setIsModaInfoActive(false)}
-        iconType={iconType}
-        description={modalMessage}
+        isModalInfoActive={modalConfig.isActive}
+        closeModalInfoEvent={onModalInfoCloseEvent}
+        iconType={modalConfig.iconType}
+        description={modalConfig.message}
       />
       <Loading isLoading={isLoading} />
     </div>

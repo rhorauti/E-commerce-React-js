@@ -4,17 +4,20 @@ import Login from "../pages/auth/login";
 import Home from "../pages/home/home";
 import NewPassword from "../pages/auth/newPassword";
 import { PasswordRecover } from "../pages/auth/passwordRecover";
+import Redirect from "@src/pages/auth/redirect";
 
 function RoutesApp() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/password-recover" element={<PasswordRecover />} />
-        <Route path="*" element={<NewPassword />} />
+        <Route path="/redirect" element={<Redirect />} />
+        <Route path="*" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );

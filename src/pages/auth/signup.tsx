@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@src/components/button";
 import { IRequestSignup } from "@src/core/interfaces/IAuthUser";
 import { createUser } from "@src/core/http/auth/userAuth";
 import Input from "@src/components/input";
 import ModalInfo from "@src/components/modal-info";
 import Loading from "@src/components/loading";
+import { AxiosError } from "axios";
+import { IAxiosResponseError } from "@src/core/interfaces/IAxiosResponseError";
 
 function Signup() {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,12 +28,15 @@ function Signup() {
     message: "",
   });
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+  const navigate = useNavigate();
+  let isSignupOk = false;
 
   async function registerNewUser(): Promise<void> {
     setIsLoading(true);
     try {
       const response = await createUser(signupData);
       if (response.status) {
+        isSignupOk = true;
         setModalConfig(() => ({
           isActive: true,
           iconType: "success",
@@ -41,11 +46,15 @@ function Signup() {
         throw new Error(response.message);
       }
     } catch (error) {
-      setModalConfig(() => ({
-        isActive: true,
-        iconType: "fail",
-        message: (error as Error).message,
-      }));
+      if (error && (error as AxiosError).isAxiosError) {
+        const axiosError = error as IAxiosResponseError;
+        console.log("AxiosError", axiosError);
+        setModalConfig(() => ({
+          isActive: true,
+          iconType: "fail",
+          message: axiosError.response.data.message,
+        }));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -66,6 +75,14 @@ function Signup() {
     signupRequirementsOk.isEmailOk,
     signupRequirementsOk.isPasswordOk,
   ]);
+
+  function onModalInfoCloseEvent(): void {
+    if (isSignupOk) {
+      navigate("/login");
+      isSignupOk = false;
+    }
+    setModalConfig((prevState) => ({ ...prevState, isActive: false }));
+  }
 
   return (
     <div>
@@ -136,13 +153,13 @@ function Signup() {
               btnIsDisabled={isBtnDisabled}
               label="Cadastrar com o e-mail"
             />
-            <p className="my-3 text-center">OU</p>
+            {/* <p className="my-3 text-center">OU</p>
             <div>
               <button className="flex w-full items-center justify-center rounded-lg border-2 border-gray-400 p-1 font-semibold hover:bg-gray-100">
                 <img src={"/img/logo-google.webp"} width="25" alt="Logo do Google" />
                 <span className="ml-3">Registre-se com o Google</span>
               </button>
-            </div>
+            </div> */}
             <p className="mt-4 text-center">
               Já tem conta?{" "}
               <Link to="/login" className="cursor-pointer font-bold">
@@ -154,9 +171,7 @@ function Signup() {
       </div>
       <ModalInfo
         isModalInfoActive={modalConfig.isActive}
-        closeModalInfoEvent={() =>
-          setModalConfig((prevState) => ({ ...prevState, isActive: false }))
-        }
+        closeModalInfoEvent={onModalInfoCloseEvent}
         iconType={modalConfig.iconType}
         description={modalConfig.message}
       />

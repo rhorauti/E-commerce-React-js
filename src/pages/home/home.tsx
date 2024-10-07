@@ -1,7 +1,7 @@
 import Icon from "@mdi/react";
-import Carrosel from "../../components/carrosel/carrosel";
-import Menu from "../../components/menu";
 import { mdiArrowRight } from "@mdi/js";
+import Menu from "@src/components/menu";
+import Carrosel from "@src/components/carrosel/carrosel";
 
 function Home() {
   return (
