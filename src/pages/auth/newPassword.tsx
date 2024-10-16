@@ -2,33 +2,47 @@ import Button from "@src/components/button";
 import Input from "@src/components/input";
 import Loading from "@src/components/loading";
 import ModalInfo from "@src/components/modal-info";
-import { updateUserPassword } from "@src/core/http/auth/userAuth";
+import { checkValidToken, updateUserPassword } from "@src/core/http/auth/userAuth";
+import { IAxiosResponseError } from "@src/core/interfaces/IAxiosResponseError";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 function NewPassword() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalInfoActive, setIsModaInfoActive] = useState(false);
   const [newPassword, setNewPassword] = useState<string>("");
   const [isPasswordOk, setIsPasswordOk] = useState(false);
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
-  const [iconType, setIconType] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
-
+  const [modalConfig, setModalConfig] = useState({
+    isActive: false,
+    iconType: "",
+    message: "",
+  });
+  const [searchParams] = useSearchParams("");
+  const [token, setToken] = useState("");
+  
+  useEffect(() => {
+    const tokenFromParams = searchParams.get("token");
+    if (tokenFromParams) {
+      setToken(tokenFromParams);
+    }
+  }, [searchParams]);
+  
   async function updatePassword(): Promise<void> {
     setIsLoading(true);
     try {
-      const response = await updateUserPassword(newPassword);
+      const response = await updateUserPassword(newPassword, token as string);
       if (response.status) {
-        setIconType("success");
+        setModalConfig(() => ({ isActive: true, iconType: "success", message: response.message }));
       } else {
-        setIconType("fail");
+        throw new Error("Falha ao cadastrar a nova senha!");
       }
-      setModalMessage(response.message);
-      setIconType("success");
-      setIsModaInfoActive(true);
     } catch (error) {
-      console.log(error);
+      const axiosError = error as IAxiosResponseError;
+      setModalConfig(() => ({
+        isActive: true,
+        iconType: "fail",
+        message: axiosError.response.data.message,
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -74,10 +88,12 @@ function NewPassword() {
         </div>
       </div>
       <ModalInfo
-        isModalInfoActive={isModalInfoActive}
-        closeModalInfoEvent={() => setIsModaInfoActive(false)}
-        iconType={iconType}
-        description={modalMessage}
+        isModalInfoActive={modalConfig.isActive}
+        closeModalInfoEvent={() =>
+          setModalConfig((prevState) => ({ ...prevState, isActive: false }))
+        }
+        iconType={modalConfig.iconType}
+        description={modalConfig.message}
       />
       <Loading isLoading={isLoading} />
     </div>

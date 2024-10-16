@@ -38,5 +38,11 @@ export interface IResponseEmailRecover {
   message: string;
   data: {
     email: boolean;
-  }
+  };
+}
+
+export interface IResponseCheckToken {
+  date: string;
+  status: boolean;
+  message: string;
 }

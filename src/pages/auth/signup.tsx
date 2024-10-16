@@ -48,7 +48,6 @@ function Signup() {
     } catch (error) {
       if (error && (error as AxiosError).isAxiosError) {
         const axiosError = error as IAxiosResponseError;
-        console.log("AxiosError", axiosError);
         setModalConfig(() => ({
           isActive: true,
           iconType: "fail",

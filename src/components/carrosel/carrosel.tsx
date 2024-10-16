@@ -21,7 +21,6 @@ function Carrosel(props: CarouselProps) {
   function prevSlide() {
     if(currentIdx > 0) {
       setCurrentIdx(prevIdx => prevIdx - 1);
-      console.log(currentIdx)
       setSize();
     } else {
       setBtnDisabled(true);
@@ -31,7 +30,6 @@ function Carrosel(props: CarouselProps) {
   function nextSlide() {
     if(currentIdx < listaImg.length) {
       setCurrentIdx(prevIdx => prevIdx + 1);
-      console.log(currentIdx)
       setSize();
     } else {
       setBtnDisabled(true);
