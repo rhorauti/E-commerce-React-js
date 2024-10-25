@@ -24,10 +24,13 @@ export interface IRequestLogin {
 export interface IResponseLogin {
   date: string;
   status: boolean;
+  token: string;
   message: string;
   data: {
-    id: number;
+    id: string;
+    username: string;
     email: string;
+    avatar: string;
   };
 }
 

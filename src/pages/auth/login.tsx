@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "@src/components/button";
+import Button from "@src/components/button/button";
 import { IRequestLogin } from "@src/core/interfaces/IAuthUser";
 import { authenticateUser } from "@src/core/http/auth/userAuth";
-import Input from "@src/components/input";
-import ModalInfo from "@src/components/modal-info";
-import Loading from "@src/components/loading";
+import Input from "@src/components/input/input";
+import ModalInfo from "@src/components/modal/modal-info";
+import Loading from "@src/components/loading/loading";
 import { IAxiosResponseError } from "@src/core/interfaces/IAxiosResponseError";
+import { store } from "@src/store/store";
+import { getToken, setUserData } from "@src/store/auth.store";
 
 function Login() {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +30,14 @@ function Login() {
     try {
       const response = await authenticateUser(loginData);
       if (response.status) {
+        store.dispatch(getToken({ token: response.token }));
+        store.dispatch(
+          setUserData({
+            username: response.data.username,
+            email: response.data.email,
+            avatar: response.data.avatar,
+          })
+        );
         setModalConfig(() => ({ isActive: true, iconType: "success", message: response.message }));
         isLoginOk = true;
       } else {

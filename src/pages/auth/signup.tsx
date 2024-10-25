@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "@src/components/button";
+import Button from "@src/components/button/button";
 import { IRequestSignup } from "@src/core/interfaces/IAuthUser";
 import { createUser } from "@src/core/http/auth/userAuth";
-import Input from "@src/components/input";
-import ModalInfo from "@src/components/modal-info";
-import Loading from "@src/components/loading";
+import Input from "@src/components/input/input";
+import ModalInfo from "@src/components/modal/modal-info";
+import Loading from "@src/components/loading/loading";
 import { AxiosError } from "axios";
 import { IAxiosResponseError } from "@src/core/interfaces/IAxiosResponseError";
 

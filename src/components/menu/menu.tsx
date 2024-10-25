@@ -10,7 +10,7 @@ import Icon from "@mdi/react";
 function Menu() {
   return (
     <>
-      <div className="sticky top-0 py-2 md:px-4 bg-blue-950 flex items-center text-white">
+      <div className="sticky top-0 py-2 md:px-4 bg-blue-950 flex items-center text-white z-10">
         <img
           src={"/img/logo.png"}
           className="hidden md:block cursor-pointer"
@@ -22,7 +22,7 @@ function Menu() {
             <select
               name="search-products"
               id="search-products"
-              className="px-4 bg-gray-200 text-black md:w-40 border border-r-0 border-black rounded-s-lg"
+              className="px-4 bg-slate-300 text-black md:w-40 border border-r-0 border-black rounded-s-lg"
             >
               <option value="1">Eletrônicos</option>
               <option value="2">Higiene</option>
@@ -30,7 +30,7 @@ function Menu() {
               <option value="4">Celular</option>
             </select>
             <input
-              type="text"
+              type="search"
               className="bg-white border grow md:w-full text-black border-black px-4 py-1"
             />
             <button className="flex justify-center items-center md:w-14 border border-l-0 border-black py-1 px-2 bg-blue-600 cursor-pointer rounded-e-lg">
@@ -42,11 +42,7 @@ function Menu() {
             <span className="text-xs whitespace-nowrap">Lista de desejos</span>
           </div>
           <div className="hidden md:flex md:flex-col md:items-center md:cursor-pointer md:text-center">
-            <Icon
-              className="text-center whitespace-nowrap"
-              path={mdiCartOutline}
-              size={1}
-            ></Icon>
+            <Icon className="text-center whitespace-nowrap" path={mdiCartOutline} size={1}></Icon>
             <span className="text-xs">Carrinho</span>
           </div>
           <div className="hidden md:flex md:flex-col md:items-center md:cursor-pointer md:text-center">
@@ -66,11 +62,7 @@ function Menu() {
           <span className="text-xs whitespace-nowrap">Lista de desejos</span>
         </div>
         <div className="flex flex-col items-center cursor-pointer text-center">
-          <Icon
-            className="text-center whitespace-nowrap"
-            path={mdiCartOutline}
-            size={1}
-          ></Icon>
+          <Icon className="text-center whitespace-nowrap" path={mdiCartOutline} size={1}></Icon>
           <span className="text-xs">Carrinho</span>
         </div>
         <div className="flex flex-col items-center cursor-pointer text-center">

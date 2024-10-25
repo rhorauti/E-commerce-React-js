@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 interface ButtonProps {
   btnColor: string;
-  label: string;
+  label?: string;
   btnIsDisabled?: boolean;
-  emitClickEvent: () => void;
+  emitClickEvent?: () => void;
 }
 
 function Button(props: ButtonProps) {

@@ -1,7 +1,7 @@
-import Button from "@src/components/button";
-import Input from "@src/components/input";
-import Loading from "@src/components/loading";
-import ModalInfo from "@src/components/modal-info";
+import Button from "@src/components/button/button";
+import Input from "@src/components/input/input";
+import Loading from "@src/components/loading/loading";
+import ModalInfo from "@src/components/modal/modal-info";
 import { sendEmailRecover } from "@src/core/http/auth/userAuth";
 import { IAxiosResponseError } from "@src/core/interfaces/IAxiosResponseError";
 import { useState } from "react";

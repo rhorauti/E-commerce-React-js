@@ -1,4 +1,4 @@
-import Button from "@src/components/button";
+import Button from "@src/components/button/button";
 import { checkValidToken } from "@src/core/http/auth/userAuth";
 import { IAxiosResponseError } from "@src/core/interfaces/IAxiosResponseError";
 import { useEffect, useState } from "react";
