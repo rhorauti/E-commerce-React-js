@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 interface ButtonProps {
-  btnColor: string;
+  btnColor?: string;
   label?: string;
   btnIsDisabled?: boolean;
   emitClickEvent?: () => void;

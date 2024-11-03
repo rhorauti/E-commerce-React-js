@@ -1,4 +1,4 @@
-export interface IGeneralProductInfo {
+export interface IProductInfo {
   id?: string;
   img?: string;
   description?: string;
@@ -6,12 +6,12 @@ export interface IGeneralProductInfo {
   isCart?: boolean;
   rate?: number;
   sales?: number;
-  tag?: string;
+  tag?: number;
   price?: number;
   discount?: number;
 }
 
-enum tagInfo {
-  FRETE_GRATIS = "Frete Grátis",
-  COMBO = "Combo",
+export enum tagInfo {
+  FRETE_GRATIS = 1,
+  COMBO = 2,
 }
